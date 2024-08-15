@@ -1,0 +1,19 @@
+.nav {
+    grid-area: n;
+    background-color: burlywood;
+    padding: 20px;
+}
+
+.item a{
+    color: wheat;
+    text-decoration: none;
+}
+
+.item a.active {
+    color: gold;
+}
+
+.item a:active,
+.item a:focus {
+color: gold;
+}
