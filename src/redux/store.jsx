@@ -2,16 +2,11 @@ import dialogsReducer from "./dialogsReducer";
 import profileReducer from "./profileReducer";
 import sidebarReducer from "./sidebarReducer";
 
-
 let store = {
   _state: {
     profilePage: {
       posts: [
-        {
-          id: 1,
-          message: "hi",
-          likesCount: "23",
-        },
+        { id: 1, message: "hi", likesCount: "23" },
         {
           id: 2,
           message: "its my first post",
@@ -77,6 +72,8 @@ let store = {
     sidebar: {},
   },
 
+
+  
   _callSubscriber() {
     console.log("State is changed");
   },
@@ -95,8 +92,6 @@ let store = {
     this._callSubscriber(this._state);
   },
 };
-
-
 
 export default store;
 window.store = store;
