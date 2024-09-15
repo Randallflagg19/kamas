@@ -128,9 +128,10 @@ export const setTotalUsersCount = (totalUsersCount: any) => {
 
 //thunks
 
-export const getUsers = (currentPage: number, pageSize: number) => {
+export const requestUsers = (currentPage: number, pageSize: number) => {
 	return (dispatch: any) => {
 		dispatch(toggleIsFetching(true))
+		dispatch(setCurrentPage(currentPage))
 
 		usersAPI.getUsers(currentPage, pageSize).then((data: any) => {
 			dispatch(toggleIsFetching(false))

@@ -1,9 +1,11 @@
 import {
-	updateNewMessageBodyCreator,
 	sendMessageCreator
 } from '../../redux/dialogsReducer'
 import Dialogs from './Dialogs'
 import {connect} from 'react-redux'
+
+import {compose} from 'redux'
+import withAuthRedirect from '../../hoc/WithAuthRedirect'
 
 interface IDialogsPage {
 	messages: { id: number, message: string }[];
@@ -11,7 +13,7 @@ interface IDialogsPage {
 	newMessageBody: string;
 }
 
-let mapStateToProps = (state: any): { dialogsPage: IDialogsPage } => {
+let mapStateToProps = (state: any) => {
 	return {
 		dialogsPage: state.dialogsPage
 	}
@@ -19,15 +21,10 @@ let mapStateToProps = (state: any): { dialogsPage: IDialogsPage } => {
 
 let mapDispatchToProps = (dispatch: any) => {
 	return {
-		updateNewMessage: (body: string) => {
-			dispatch(updateNewMessageBodyCreator(body))
-		},
-		sendMessage: () => {
-			dispatch(sendMessageCreator())
+		sendMessage: (newMessageBody: any) => {
+			dispatch(sendMessageCreator(newMessageBody))
 		}
 	}
 }
 
-const DialogsContainer = connect(mapStateToProps, mapDispatchToProps)(Dialogs)
-
-export default DialogsContainer
+export default compose(connect(mapStateToProps, mapDispatchToProps), withAuthRedirect)(Dialogs)

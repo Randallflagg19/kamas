@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 export default function Header(props: any) {
-	
+
 	return (
 		<header className={styles.header}>
 			<img
@@ -17,7 +17,10 @@ export default function Header(props: any) {
 				alt=""
 			/>
 			<div className={styles.loginBlock}>
-				{props.isAuth ? props.login :
+				{props.isAuth ?
+					<div> {props.login}
+						<button onClick={props.logout}>Logout</button>
+					</div> :
 					<NavLink to={'/login'}>Login</NavLink>}
 			</div>
 		</header>

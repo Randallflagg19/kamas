@@ -1,6 +1,8 @@
 import React from 'react'
 import styles from './ProfileInfo.module.css'
-import Preloader from '../../Preloader/Preloader'
+import Preloader from '../../common/Preloader/Preloader'
+import ProfileStatus from './ProfileStatus'
+import ProfileStatusWithHooks from './ProfileStatusWithHooks'
 
 export default function ProfileInfo(props: any) {
 	if (!props.profile) {
@@ -8,12 +10,11 @@ export default function ProfileInfo(props: any) {
 	}
 	return (
 		<div>
-			<div>
-				<img
-					src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ80P6r9XiTwfHKhlH3NqiJfI3pmMFPvPx8Q&s"/>
-			</div>
 			<div className={styles.descriptionBlock}>
-				<img src={props.profile.photos.large}/></div>
+				<img src={props.profile.photos.large}/>
+				<ProfileStatusWithHooks status={props.status} updateStatus={props.updateStatus}/>
+			</div>
+
 		</div>
 	)
 }

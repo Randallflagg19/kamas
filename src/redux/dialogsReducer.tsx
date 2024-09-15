@@ -16,7 +16,7 @@ interface IDialog {
 interface IDialogsPage {
 	messages: IMessage[];
 	dialogs: IDialog[];
-	newMessageBody: string;
+	newMessageBody?: string;
 }
 
 interface UpdateNewMessageBodyAction {
@@ -26,6 +26,7 @@ interface UpdateNewMessageBodyAction {
 
 interface SendMessageAction {
 	type: typeof SEND_MESSAGE;
+	newMessageBody: any
 }
 
 type DialogsActionTypes = UpdateNewMessageBodyAction | SendMessageAction;
@@ -45,8 +46,7 @@ let initialState: IDialogsPage = {
 		{id: 4, name: 'forthDialog'},
 		{id: 5, name: 'fifthDialog'},
 		{id: 6, name: 'sixthDialog'}
-	],
-	newMessageBody: ''
+	]
 }
 
 const dialogsReducer = (
@@ -58,10 +58,9 @@ const dialogsReducer = (
 			return {...state, newMessageBody: action.body}
 		}
 		case SEND_MESSAGE: {
-			let body = state.newMessageBody
+			let body = action.newMessageBody
 			return {
 				...state,
-				newMessageBody: '',
 				messages: [...state.messages, {id: state.messages.length + 1, message: body}]
 			}
 		}
@@ -71,8 +70,8 @@ const dialogsReducer = (
 }
 
 // Action creators
-export const sendMessageCreator = (): SendMessageAction => {
-	return {type: SEND_MESSAGE}
+export const sendMessageCreator = (newMessageBody: any): SendMessageAction => {
+	return {type: SEND_MESSAGE, newMessageBody}
 }
 
 export const updateNewMessageBodyCreator = (

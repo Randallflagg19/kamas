@@ -13,6 +13,8 @@ const root = ReactDOM.createRoot(
 root.render(
 	<BrowserRouter>
 		<React.StrictMode>
+
+			{/*оборачивает компонент  и через контекст React передает Redux-хранилище всем компонентам*/}
 			<Provider store={store}>
 				<App/>
 			</Provider>

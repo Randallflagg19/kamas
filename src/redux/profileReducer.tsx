@@ -1,9 +1,8 @@
-import {usersAPI} from '../api/api'
-// import {toggleFollowingProgress, unfollowSuccess} from './userReducer'
+import {profileAPI, usersAPI} from '../api/api'
 
 const ADD_POST = 'ADD-POST'
-const UPDATE_NEW_POST_TEXT = 'UPDATE-NEW-POST-TEXT'
 const SET_USER_PROFILE = 'SET-USER-PROFILE'
+const SET_STATUS = 'SET-STATUS'
 
 interface Profile {
 	id: number;
@@ -38,8 +37,8 @@ let initialState = {
 			likesCount: '2330'
 		}
 	],
-	newPostText: 'newPost',
-	profile: null
+	profile: null,
+	status: ''
 }
 
 const profileReducer = (state: any = initialState, action: any) => {
@@ -48,15 +47,15 @@ const profileReducer = (state: any = initialState, action: any) => {
 		case ADD_POST: {
 			let newPost = {
 				id: 6,
-				message: state.newPostText,
+				message: action.newPostText,
 				likesCount: '0'
 			}
 
 			return {...state, posts: [...state.posts, newPost], newPostText: ''}
 		}
 
-		case UPDATE_NEW_POST_TEXT: {
-			return {...state, newPostText: action.newText}
+		case SET_STATUS: {
+			return {...state, status: action.status}
 		}
 
 		case SET_USER_PROFILE: {
@@ -67,22 +66,10 @@ const profileReducer = (state: any = initialState, action: any) => {
 	}
 }
 
-// export const setProfileAva = (userId: number) => {
-// 	return (dispatch: any) => {
-// 		dispatch(toggleFollowingProgress(true, userId))
-// 		usersAPI.unfollowUser(userId)
-// 			.then((response) => {
-// 				if (response.data.resultCode === 0) {
-// 					dispatch(unfollowSuccess(userId))
-// 				}
-// 				dispatch(toggleFollowingProgress(false, userId))
-// 			})
-//
-// 	}
-// }
-
-export const addPostActionCreator = () => ({type: ADD_POST})
+export const addPostActionCreator = (newPostText: string) => ({type: ADD_POST, newPostText})
 export const setUserProfile = (profile: Profile) => ({type: SET_USER_PROFILE, profile})
+export const setStatus = (status: string) => ({type: SET_STATUS, status})
+
 export const getUserProfile = (userId: number) => (dispatch: any) => {
 	usersAPI.getProfileUser(userId)
 		.then(response => {
@@ -90,11 +77,19 @@ export const getUserProfile = (userId: number) => (dispatch: any) => {
 		})
 }
 
-export const updateNewPostTextActionCreator = (text: any) => {
-	return {
-		type: UPDATE_NEW_POST_TEXT,
-		newText: text
-	}
+export const getStatus = (userId: number) => (dispatch: any) => {
+	profileAPI.getStatus(userId)
+		.then(response => {
+			dispatch(setStatus(response.data))
+		})
+}
+
+export const updateStatus = (status: string) => (dispatch: any) => {
+	profileAPI.updateStatus(status)
+		.then(response => {
+			if (response.data.resultCode === 0) {}
+			dispatch(setStatus(status))
+		})
 }
 
 export default profileReducer
