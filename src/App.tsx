@@ -28,6 +28,7 @@ class App extends React.Component<AppProps> {
 
 		return (
 			<div className="app-wrapper">
+				Profile
 				<HeaderContainer/>
 				<Navbar/>
 				<div className="app-wrapper-content">

@@ -31,7 +31,7 @@ interface UsersProps {
 	followSuccess?: any;
 	unfollowSuccess?: any;
 	location?: { city: string; country: string };
-	totalUsersCount: any;
+	totalUsersCount: number;
 	pageSize: number;
 	currentPage: number;
 	isFetching: boolean;
@@ -43,11 +43,13 @@ interface UsersProps {
 
 class UsersContainer extends React.Component<UsersProps> {
 	componentDidMount() {
-		this.props.requestUsers(this.props.currentPage, this.props.pageSize)
+		const {currentPage, pageSize} = this.props
+		this.props.requestUsers(currentPage, pageSize)
 	}
 
 	onPageChanged = (pageNumber: number) => {
-		this.props.requestUsers(pageNumber, this.props.pageSize)
+		const {pageSize} = this.props
+		this.props.requestUsers(pageNumber, pageSize)
 		this.props.setCurrentPage(pageNumber)
 	}
 
@@ -67,20 +69,8 @@ class UsersContainer extends React.Component<UsersProps> {
 	}
 }
 
-// let mapStateToProps = (state: any) => {
-// 	return {
-// 		users: state.usersPage.users,
-// 		pageSize: state.usersPage.pageSize,
-// 		totalUsersCount: state.usersPage.totalUsersCount,
-// 		currentPage: state.usersPage.currentPage,
-// 		isFetching: state.usersPage.isFetching,
-// 		followingInProgress: state.usersPage.followingInProgress
-// 	}
-// }
-
 let mapStateToProps = (state: any) => {
 	return {
-		// users: getUsers(state),
 		users: getUsers(state),
 		pageSize: getPageSize(state),
 		totalUsersCount: getTotalUsersCount(state),

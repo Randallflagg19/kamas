@@ -4,15 +4,16 @@ import Preloader from '../../common/Preloader/Preloader'
 import ProfileStatus from './ProfileStatus'
 import ProfileStatusWithHooks from './ProfileStatusWithHooks'
 
-export default function ProfileInfo(props: any) {
-	if (!props.profile) {
+export default function ProfileInfo({profile, status, updateStatus}:
+	{ profile: any, status: any, updateStatus: any }) {
+	if (!profile) {
 		return <Preloader/>
 	}
 	return (
 		<div>
 			<div className={styles.descriptionBlock}>
-				<img src={props.profile.photos.large}/>
-				<ProfileStatusWithHooks status={props.status} updateStatus={props.updateStatus}/>
+				<img src={profile.photos.large}/>
+				<ProfileStatusWithHooks status={status} updateStatus={updateStatus}/>
 			</div>
 
 		</div>
