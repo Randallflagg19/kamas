@@ -11,6 +11,7 @@ interface UsersProps {
 	followingInProgress: any;
 	follow: (userId: number) => void;
 	unfollow: (userId: number) => void;
+	portionSize?: number;
 }
 
 function Users({
@@ -21,7 +22,8 @@ function Users({
 	users,
 	followingInProgress,
 	follow,
-	unfollow
+	unfollow,
+	portionSize = 10 // Указываем значение по умолчанию (например, 10)
 }: UsersProps) {
 	let pagesCount = Math.ceil(totalUsersCount / pageSize)
 
@@ -32,9 +34,10 @@ function Users({
 
 	return <div>
 		<Paginator currentPage={currentPage}
-		           totalUsersCount={totalUsersCount}
+		           totalItemsCount={totalUsersCount}
 		           pageSize={pageSize}
-		           onPageChanged={onPageChanged}/>
+		           onPageChanged={onPageChanged}
+		           portionSize={portionSize}/>
 
 		{users.map((user: any) => <User user={user}
 		                                followingInProgress={followingInProgress}
