@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/kamas/static/css/main.d31dfbab.css",
-    "main.js": "/kamas/static/js/main.52c39e4c.js",
+    "main.js": "/kamas/static/js/main.de1d1d85.js",
     "static/media/load.gif": "/kamas/static/media/load.f1c714b96d98294d18a2.gif",
     "index.html": "/kamas/index.html",
     "main.d31dfbab.css.map": "/kamas/static/css/main.d31dfbab.css.map",
-    "main.52c39e4c.js.map": "/kamas/static/js/main.52c39e4c.js.map"
+    "main.de1d1d85.js.map": "/kamas/static/js/main.de1d1d85.js.map"
   },
   "entrypoints": [
     "static/css/main.d31dfbab.css",
-    "static/js/main.52c39e4c.js"
+    "static/js/main.de1d1d85.js"
   ]
 }
