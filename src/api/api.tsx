@@ -8,16 +8,6 @@ const instance = axios.create({
 	}
 })
 
-interface AuthResponse {
-	resultCode: number;
-	messages: string[];
-	data: {
-		id: number;
-		email: string;
-		login: string;
-	};
-}
-
 export const usersAPI = {
 
 	getUsers: async (currentPage = 3, pageSize = 10) => {
@@ -33,11 +23,6 @@ export const usersAPI = {
 
 	unfollowUser(userId: number) {
 		return instance.delete(`follow/${userId}`)
-	},
-
-	getProfileUser: async (userId: number) => {
-		console.warn('obsolete method. Please use profileAPI object.')
-		return profileAPI.getProfileUser(userId)
 	}
 }
 
@@ -45,6 +30,7 @@ export const profileAPI = {
 
 	getProfileUser: async (userId: number) => {
 		return instance.get(`profile/` + userId)
+
 	},
 
 	getStatus: async (userId: number) => {
@@ -53,6 +39,18 @@ export const profileAPI = {
 
 	updateStatus: async (status: string) => {
 		return instance.put(`profile/status/`, {status: status})
+	},
+
+	savePhoto: async (photoFile: string) => {
+		let formData = new FormData()
+		formData.append('image', photoFile)
+		return instance.put(`profile/photo/`, formData, {
+			headers:
+				{'Content-Type': 'multipart/form-data'}
+		})
+	},
+	saveProfile: async (profile: any) => {
+		return instance.put(`profile`, profile)
 	}
 
 }
@@ -61,11 +59,16 @@ export const authAPI = {
 	me: async () => {
 		return instance.get(`auth/me`)
 	},
-	login: async (email: string, password: string, rememberMe: boolean = false) => {
-		return instance.post(`auth/login`, {email, password, rememberMe})
+	login: async (email: string, password: string, rememberMe: boolean = false, captcha: any) => {
+		return instance.post(`auth/login`, {email, password, rememberMe, captcha})
 	},
 	logout: async () => {
 		return instance.delete(`auth/login`)
 	}
+}
 
+export const securityAPI = {
+	getCaptchaURL() {
+		return instance.get(`security/get-captcha-url`)
+	}
 }

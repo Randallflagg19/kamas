@@ -32,10 +32,8 @@ type MyPostsProps = {
 };
 
 const MyPosts: React.FC<MyPostsProps> = React.memo((props) => {
-	console.log('RENDER')
-	console.log(props)
 
-	let postsElements = props.posts.map((post) => (
+	let postsElements = [...props.posts].map((post) => (
 		<Post key={post.id} id={post.id} message={post.message} likesCount={post.likesCount}/>
 	))
 

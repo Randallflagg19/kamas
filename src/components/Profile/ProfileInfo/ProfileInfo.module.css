@@ -1,3 +1,14 @@
-.descriptionBlock{
+.descriptionBlock {
     padding: 10px;
+}
+
+.profileImage {
+    max-width: 300px;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+}
+
+.contact {
+    padding-left: 10px;
 }

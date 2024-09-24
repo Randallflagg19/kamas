@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import App from './App'
 import store from './redux/reduxStore'
-import {BrowserRouter} from 'react-router-dom'
+import {BrowserRouter, HashRouter} from 'react-router-dom'
 import {Provider} from 'react-redux'
 
 const root = ReactDOM.createRoot(
@@ -11,10 +11,8 @@ const root = ReactDOM.createRoot(
 )
 
 root.render(
-	<BrowserRouter>
+	<BrowserRouter basename={process.env.PUBLIC_URL}>
 		<React.StrictMode>
-
-			{/*оборачивает компонент  и через контекст React передает Redux-хранилище всем компонентам*/}
 			<Provider store={store}>
 				<App/>
 			</Provider>

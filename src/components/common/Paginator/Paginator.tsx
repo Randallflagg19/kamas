@@ -63,11 +63,8 @@ function Paginator({
 						className={cn({
 							[styles.selectedPage]: currentPage === page
 						}, styles.pageNumber)}
-						onClick={() => handlePageClick(page)}
-					>
-                        {page}
-                    </span>
-				))}
+						onClick={() => handlePageClick(page)}>
+                        {page}</span>))}
 
 			{portionNumber < portionCount && (
 				<button onClick={handleNextClick}>Next</button>

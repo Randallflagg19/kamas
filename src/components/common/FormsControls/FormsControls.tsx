@@ -1,5 +1,6 @@
 import styles from './FormsControls.module.css'
-
+// @ts-ignore
+import {InjectedFormProps, Field, reduxForm} from 'redux-form'
 // @ts-ignore
 const FormControl = ({meta: {touched, error}, children}) => {
 	const hasError = touched && error
@@ -13,15 +14,24 @@ const FormControl = ({meta: {touched, error}, children}) => {
 	)
 }
 
-// @ts-ignore
-export const TextArea = (props) => {
+export const TextArea = (props: any) => {
 	const {input, meta, child, ...restProps} = props
 	return <FormControl {...props}> <textarea {...input} {...restProps} />
 	</FormControl>
 }
-// @ts-ignore
-export const Input = (props) => {
+export const Input = (props: any) => {
 	const {input, meta, child, ...restProps} = props
 	return <FormControl {...props}> <input {...input} {...restProps} />
 	</FormControl>
 }
+
+export const createField = (
+	placeholder: any,
+	name: any,
+	validators: any,
+	component: any,
+	props = {},
+	text = '') => (<div>
+	<Field placeholder={placeholder} name={name} validators={validators}
+	       component={component} {...props} />
+</div>)
