@@ -1,6 +1,5 @@
 import styles from './FormsControls.module.css'
-// @ts-ignore
-import {InjectedFormProps, Field, reduxForm} from 'redux-form'
+import {Field} from 'redux-form'
 // @ts-ignore
 const FormControl = ({meta: {touched, error}, children}) => {
 	const hasError = touched && error

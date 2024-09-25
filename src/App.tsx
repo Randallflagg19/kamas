@@ -57,7 +57,7 @@ class App extends React.Component<AppProps> {
 						<Route path="/news" element={<ProfileContainer/>}/>
 						<Route path="/music" element={<ProfileContainer/>}/>
 						<Route path="/settings" element={<ProfileContainer/>}/>
-						<Route path="/users" element={<UsersContainer/>}/>
+						<Route path="/users" element={<UsersContainer pageTitle="samurai"/>}/>
 						<Route path="/login" element={<Login/>}/>
 						<Route path="/" element={<Suspense fallback={<Preloader/>}>
 							<ProfileContainer/></Suspense>}/>

@@ -2,6 +2,13 @@ import React from 'react'
 import styles from './Users.module.css'
 import {NavLink} from 'react-router-dom'
 
+type Props = {
+	user: any,
+	followingInProgress: any,
+	follow: any,
+	unfollow: any
+}
+
 function User({
 	user, followingInProgress, follow, unfollow
 }: { user: any, followingInProgress: any, follow: any, unfollow: any }) {

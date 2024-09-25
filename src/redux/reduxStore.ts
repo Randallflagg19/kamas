@@ -10,18 +10,24 @@ import appReducer from './appReducer'
 
 const thunkMiddleware = thunk
 
-let reducers = combineReducers({
-    dialogsPage: dialogsReducer,
-    profilePage: profileReducer,
-    sidebar: sidebarReducer,
-    usersPage: userReducer,
-    auth: authReducer,
-    form: formReducer,
-    app: appReducer
+let rootReducer = combineReducers({
+	dialogsPage: dialogsReducer,
+	profilePage: profileReducer,
+	sidebar: sidebarReducer,
+	usersPage: userReducer,
+	auth: authReducer,
+	form: formReducer,
+	app: appReducer
 })
 
+type RootReducerType = typeof rootReducer // (globalstate: AppStateType) => AppStateType
+export type  AppStateType = ReturnType<RootReducerType>
+
+let state: AppStateType
+
+//@ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-const store = createStore(reducers, composeEnhancers(
-    applyMiddleware(thunkMiddleware)))
+const store = createStore(rootReducer, composeEnhancers(
+	applyMiddleware(thunkMiddleware)))
 
 export default store

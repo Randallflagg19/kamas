@@ -1,4 +1,6 @@
 import axios from 'axios'
+import {ProfileType} from '../types/types'
+import {response} from 'express'
 
 const instance = axios.create({
 	withCredentials: true,
@@ -12,15 +14,12 @@ export const usersAPI = {
 
 	getUsers: async (currentPage = 3, pageSize = 10) => {
 		const response = await instance.get(`users?page=
-			${currentPage}&count=${pageSize}`
-		)
+			${currentPage}&count=${pageSize}`)
 		return response.data
 	},
-
 	followUser(userId: number) {
 		return instance.post(`follow/${userId}`)
 	},
-
 	unfollowUser(userId: number) {
 		return instance.delete(`follow/${userId}`)
 	}
@@ -49,18 +48,47 @@ export const profileAPI = {
 				{'Content-Type': 'multipart/form-data'}
 		})
 	},
-	saveProfile: async (profile: any) => {
+	saveProfile: async (profile: ProfileType) => {
 		return instance.put(`profile`, profile)
 	}
+}
 
+export enum ResultCodes {
+	Success = 0,
+	Error = 1
+}
+
+export enum ResultCodeForCaptcha {
+	CaptchaIsRequired = 10
+}
+
+type MeResponseType = {
+	data: {
+		id: number,
+		email: string,
+		login: string
+	}
+	resultCode: ResultCodes
+	messages: Array<string>
+}
+
+type LoginResponseType = {
+	data: {
+		userId: number
+	}
+	resultCode: ResultCodes | ResultCodeForCaptcha
+	messages: Array<string>
 }
 
 export const authAPI = {
 	me: async () => {
-		return instance.get(`auth/me`)
+		return instance.get<MeResponseType>(`auth/me`)
+			.then(response => response.data)
 	},
-	login: async (email: string, password: string, rememberMe: boolean = false, captcha: any) => {
-		return instance.post(`auth/login`, {email, password, rememberMe, captcha})
+	login: async (email: string, password: string,
+		rememberMe: boolean = false, captcha: null | string = null) => {
+		return instance.post<LoginResponseType>(`auth/login`, {email, password, rememberMe, captcha})
+			.then(response => response.data)
 	},
 	logout: async () => {
 		return instance.delete(`auth/login`)
@@ -72,3 +100,5 @@ export const securityAPI = {
 		return instance.get(`security/get-captcha-url`)
 	}
 }
+
+

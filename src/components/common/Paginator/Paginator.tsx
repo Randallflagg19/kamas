@@ -2,38 +2,40 @@ import React, {useState, useEffect} from 'react'
 import styles from './Paginator.module.css'
 import cn from 'classnames'
 
-function Paginator({
-	totalItemsCount,
-	pageSize,
-	currentPage,
-	onPageChanged,
-	portionSize = 10
-}: {
+type PropsType = {
 	totalItemsCount: number,
 	pageSize: number,
-	currentPage: number,
+	currentPageNumber: number,
 	onPageChanged: (pageNumber: number) => void,
-	portionSize: number
-}) {
+	portionSize?: number
+}
+
+const Paginator: React.FC<PropsType> = ({
+	totalItemsCount,
+	pageSize,
+	currentPageNumber,
+	onPageChanged,
+	portionSize = 10
+}) => {
 	let pagesCount = Math.ceil(totalItemsCount / pageSize)
 
-	let pages = []
+	let pages: Array<number> = []
 	for (let i = 1; i <= pagesCount; i++) {
 		pages.push(i)
 	}
 
 	let portionCount = Math.ceil(pagesCount / portionSize)
-	let [portionNumber, setPortionNumber] = useState(Math.ceil(currentPage / portionSize)) // Начальная порция на основе текущей страницы
+	let [portionNumber, setPortionNumber] = useState(1) // Начальная порция на основе текущей страницы
 	let leftPortionPageNumber = (portionNumber - 1) * portionSize + 1
 	let rightPortionPageNumber = portionNumber * portionSize
 
-	// Эффект для пересчета portionNumber при изменении currentPage
+	// Эффект для пересчета portionNumber при изменении currentPageNumber
 	useEffect(() => {
-		let newPortionNumber = Math.ceil(currentPage / portionSize)
+		let newPortionNumber = Math.ceil(currentPageNumber / portionSize)
 		if (newPortionNumber !== portionNumber) {
 			setPortionNumber(newPortionNumber)
 		}
-	}, [currentPage, portionSize])
+	}, [currentPageNumber, portionSize])
 
 	const handlePageClick = (page: number) => {
 		onPageChanged(page)
@@ -61,7 +63,7 @@ function Paginator({
 					<span
 						key={page}
 						className={cn({
-							[styles.selectedPage]: currentPage === page
+							[styles.selectedPage]: currentPageNumber === page
 						}, styles.pageNumber)}
 						onClick={() => handlePageClick(page)}>
                         {page}</span>))}

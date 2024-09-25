@@ -1,30 +1,29 @@
 import React from 'react'
 import Paginator from '../common/Paginator/Paginator'
 import User from './User'
+import {UserType} from '../../types/types'
 
-interface UsersProps {
-	currentPage: number;
+type PropsType = {
 	totalUsersCount: number;
 	pageSize: number;
+	currentPageNumber: number;
 	onPageChanged: (pageNumber: number) => void;
-	users: any;
-	followingInProgress: any;
+	users: Array<UserType>;
+	followingInProgress: Array<number>;
 	follow: (userId: number) => void;
 	unfollow: (userId: number) => void;
-	portionSize?: number;
 }
 
-function Users({
-	currentPage,
+const Users: React.FC<PropsType> = ({
+	currentPageNumber,
 	totalUsersCount,
 	pageSize,
 	onPageChanged,
 	users,
 	followingInProgress,
 	follow,
-	unfollow,
-	portionSize = 10 // Указываем значение по умолчанию (например, 10)
-}: UsersProps) {
+	unfollow
+}) => {
 	let pagesCount = Math.ceil(totalUsersCount / pageSize)
 
 	let pages = []
@@ -33,17 +32,17 @@ function Users({
 	}
 
 	return <div>
-		<Paginator currentPage={currentPage}
+		<Paginator currentPageNumber={currentPageNumber}
 		           totalItemsCount={totalUsersCount}
 		           pageSize={pageSize}
 		           onPageChanged={onPageChanged}
-		           portionSize={portionSize}/>
+		/>
 
-		{users.map((user: any) => <User user={user}
-		                                followingInProgress={followingInProgress}
-		                                follow={follow}
-		                                unfollow={unfollow}
-		                                key={user.id}/>)}
+		{users.map((user: UserType) => <User user={user}
+		                                     followingInProgress={followingInProgress}
+		                                     follow={follow}
+		                                     unfollow={unfollow}
+		                                     key={user.id}/>)}
 	</div>
 }
 
