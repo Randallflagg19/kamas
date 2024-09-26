@@ -1,7 +1,7 @@
 import {connect} from 'react-redux'
 import Preloader from '../common/Preloader/Preloader'
 import {
-	unfollow, follow, setCurrentPage, toggleFollowingProgress,
+	unfollow, follow,
 	requestUsers
 } from '../../redux/userReducer'
 import React from 'react'

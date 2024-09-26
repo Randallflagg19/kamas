@@ -1,29 +1,25 @@
 import {
-	authAPI,
 	ResultCodeForCaptcha,
-	ResultCodes,
-	securityAPI
+	ResultCodes
 } from '../api/api'
 
-import {stopSubmit} from 'redux-form'
-
-const SET_USER_DATA = 'gustav/auth/SET-USER-DATA'
-const GET_CAPTCHA_URL_SUCCESS = 'gustav/auth/GET_CAPTCHA_URL_SUCCESS'
+import {FormAction, stopSubmit} from 'redux-form'
+import {authAPI} from '../api/authAPI'
+import {securityAPI} from '../api/securityAPI'
+import {BaseThunkType, InferActionsTypes} from './reduxStore'
 
 let initialState = {
 	userId: null as null | number,
-	email: null as null | number,
-	login: null as null | number,
+	email: null as null | string,
+	login: null as null | string,
 	isAuth: false,
 	captchaURL: null as null | string
 }
 
-export type InitialStateType = typeof initialState
-
-const authReducer = (state = initialState, action: any): InitialStateType => {
+const authReducer = (state = initialState, action: ActionType): InitialStateType => {
 	switch (action.type) {
-		case SET_USER_DATA:
-		case GET_CAPTCHA_URL_SUCCESS: {
+		case 'gustav/auth/SET-USER-DATA':
+		case 'gustav/auth/GET_CAPTCHA_URL_SUCCESS': {
 			return {
 				...state,
 				...action.payload
@@ -34,41 +30,23 @@ const authReducer = (state = initialState, action: any): InitialStateType => {
 	}
 }
 
-type SetAuthUserDataActionPayloadType = {
-	userId: number | null
-	email: string | null
-	login: string | null
-	isAuth: boolean
+export const actions = {
+	setAuthUserData: (userId: number | null, email: string | null, login: string | null, isAuth: boolean) =>
+		({type: 'gustav/auth/SET-USER-DATA', payload: {userId, email, login, isAuth} as const}),
+	getCaptchaURLSuccess: (captchaURL: string) =>
+		({type: 'gustav/auth/GET_CAPTCHA_URL_SUCCESS', payload: {captchaURL} as const})
 }
 
-type SetAuthUserDataActionType = {
-	type: typeof SET_USER_DATA,
-	payload: SetAuthUserDataActionPayloadType
-}
-
-export const setAuthUserData = (userId: number | null, email: string | null, login: string | null, isAuth: boolean): SetAuthUserDataActionType => {
-	return {type: SET_USER_DATA, payload: {userId, email, login, isAuth}}
-}
-
-type GetCaptchaURLSuccessActionType = {
-	type: typeof GET_CAPTCHA_URL_SUCCESS,
-	payload: { captchaURL: string }
-}
-
-export const getCaptchaURLSuccess = (captchaURL: string): GetCaptchaURLSuccessActionType => {
-	return {type: GET_CAPTCHA_URL_SUCCESS, payload: {captchaURL}}
-}
-
-export const getAuthUserData = () => async (dispatch: any) => {
+export const getAuthUserData = (): ThunkType => async (dispatch) => {
 	let meData = await authAPI.me()
 	if (meData.resultCode === ResultCodes.Success) {
 		let {id, login, email} = meData.data
-		dispatch(setAuthUserData(id, email, login, true))
+		dispatch(actions.setAuthUserData(id, email, login, true))
 	}
 }
 
-export const login = (email: string, password: string, rememberMe: boolean, captcha: string) =>
-	async (dispatch: any) => {
+export const login = (email: string, password: string, rememberMe: boolean, captcha: string): ThunkType =>
+	async (dispatch) => {
 		let loginData = await authAPI.login(email, password, rememberMe, captcha)
 		if (loginData.resultCode === ResultCodes.Success) {
 			dispatch(getAuthUserData())
@@ -82,17 +60,21 @@ export const login = (email: string, password: string, rememberMe: boolean, capt
 		}
 	}
 
-export const getCaptchaURL = () => async (dispatch: any) => {
-	let response = await securityAPI.getCaptchaURL()
-	const captchaURL = response.data.url
-	dispatch(getCaptchaURLSuccess(captchaURL))
+export const getCaptchaURL = (): ThunkType => async (dispatch) => {
+	let data = await securityAPI.getCaptchaURL()
+	const captchaURL = data.url
+	dispatch(actions.getCaptchaURLSuccess(captchaURL))
 }
 
-export const logout = () => async (dispatch: any) => {
+export const logout = (): ThunkType => async (dispatch) => {
 	let response = await authAPI.logout()
 	if (response.data.resultCode === 0) {
-		dispatch(setAuthUserData(null, null, null, false))
+		dispatch(actions.setAuthUserData(null, null, null, false))
 	}
 }
 
 export default authReducer
+
+export type InitialStateType = typeof initialState
+type ActionType = InferActionsTypes<typeof actions>
+type ThunkType = BaseThunkType<ActionType | FormAction>
