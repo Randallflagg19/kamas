@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import Profile from './Profile'
 import {connect} from 'react-redux'
 import {
@@ -6,63 +6,74 @@ import {
 	getUserProfile,
 	updateStatus,
 	savePhoto,
-	saveProfile
+	saveProfile, ThunkType
 } from '../../redux/profileReducer'
-import {useParams} from 'react-router-dom'
+import {useParams, useNavigate} from 'react-router-dom'
 import withAuthRedirect from '../../hoc/WithAuthRedirect'
 import {compose} from 'redux'
+import {AppStateType} from '../../redux/reduxStore'
+import {ProfileType} from '../../types/types'
 
-export function withRouter(Children: any) {
-	return (props: any) => {
-		const match = {params: useParams()}
-		return <Children {...props} match={match}/>
-	}
-}
+type MapPropsType = ReturnType<typeof mapStateToProps>;
+type DispatchPropsType = {
+	getUserProfile: (userId: number) => void;
+	getStatus: (userId: number) => void;
+	updateStatus: (text: string) => void;
+	savePhoto: (file: File) => void;
+	saveProfile: (profile: ProfileType) => ThunkType
+};
 
-class ProfileContainer extends React.Component<any, any> {
+type PropsType = MapPropsType & DispatchPropsType
 
-	refreshProfile() {
-		let userId = this.props.match?.params?.userId
-		if (!userId) {
-			userId = this.props.authorizedUserId
+const ProfileContainer: React.FC<PropsType> = ({
+	profile, status, authorizedUserId, getUserProfile,
+	getStatus, updateStatus, savePhoto
+}) => {
+	const {userId} = useParams<{ userId: string }>()
+	const navigate = useNavigate()
+
+	const refreshProfile = () => {
+		let id: number | null = userId ? +userId : null
+		if (!id) {
+			id = authorizedUserId
+			if (!id) {
+				navigate('/login')
+				return
+			}
 		}
-		this.props.getUserProfile(userId)
-		this.props.getStatus(userId)
-	}
-
-	componentDidMount() {
-		this.refreshProfile()
-	}
-
-	componentDidUpdate(prevProps: any) {
-		let userId = this.props.match?.params?.userId
-		if (userId !== prevProps.match?.params?.userId) {
-			this.refreshProfile()
+		if (!id) {
+			throw new Error('id should exist')
+		}
+		else {
+			getUserProfile(id)
+			getStatus(id)
 		}
 	}
 
-	render() {
-		return <Profile {...this.props}
-		                isOwner={!this.props.match.params.userId}
-		                profile={this.props.profile}
-		                status={this.props.status}
-		                updateStatus={this.props.updateStatus}
-		                savePhoto={this.props.savePhoto}
+	useEffect(() => {
+		refreshProfile()
+	}, [userId, authorizedUserId])
+
+	return (
+		<Profile
+			saveProfile={saveProfile}
+			isOwner={!userId}
+			profile={profile}
+			status={status}
+			updateStatus={updateStatus}
+			savePhoto={savePhoto}
 		/>
-	}
+	)
 }
 
-const mapStateToProps = (state: any) => {
-	return ({
-		profile: state.profilePage.profile,
-		status: state.profilePage.status,
-		authorizedUserId: state.auth.userId,
-		isAuth: state.auth.isAuth
-	})
-}
+const mapStateToProps = (state: AppStateType) => ({
+	profile: state.profilePage.profile,
+	status: state.profilePage.status,
+	authorizedUserId: state.auth.userId,
+	isAuth: state.auth.isAuth
+})
 
 export default compose<React.ComponentType>(
 	connect(mapStateToProps, {getUserProfile, getStatus, updateStatus, savePhoto, saveProfile}),
-	withRouter,
 	withAuthRedirect
 )(ProfileContainer)

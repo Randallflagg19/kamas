@@ -1,29 +1,22 @@
 import React from 'react'
-import {createField, Input, TextArea} from './../../common/FormsControls/FormsControls'
+import {
+	createField,
+	GetStringKeys,
+	Input,
+	TextArea
+} from './../../common/FormsControls/FormsControls'
 import {reduxForm, InjectedFormProps} from 'redux-form'
 import styles from './ProfileInfo.module.css'
 import style from '../../common/FormsControls/FormsControls.module.css'
+import {ProfileType} from '../../../types/types'
 
-// Определяем типы для значений формы
-type ProfileDataFormValues = {
-	fullName: string;
-	lookingForAJob: boolean;
-	lookingForAJobDescription: string;
-	aboutMe: string;
-	contacts: Record<string, string>;
-};
-
-// Определяем типы для пропсов формы
-type ProfileDataFormProps = {
-	profile: ProfileDataFormValues;
-	error?: string; // Ошибка может быть не определена
-};
-
-// Объединяем InjectedFormProps и ProfileDataFormProps
-type FormProps = InjectedFormProps<ProfileDataFormValues, any> & ProfileDataFormProps;
+type Props = {
+	profile: ProfileType
+}
+type  ProfileTypeKeys = GetStringKeys<ProfileType>
 
 // Основной компонент формы
-const ProfileDataForm: React.FC<FormProps> = ({handleSubmit, profile, error}) => {
+const ProfileDataForm: React.FC<InjectedFormProps<ProfileType, Props> & Props> = ({handleSubmit, profile, error}) => {
 	return (
 		<form onSubmit={handleSubmit}>
 			<button>Сохранить</button>
@@ -34,22 +27,22 @@ const ProfileDataForm: React.FC<FormProps> = ({handleSubmit, profile, error}) =>
 			)}
 
 			<div>
-				<b>Полное имя</b>: {createField('Полное имя', 'fullName', [], Input)}
+				<b>Полное имя</b>: {createField<ProfileTypeKeys>('Full name', 'fullName', [], Input)}
 			</div>
 
 			<div>
 				<b>Ищу работу: </b>
-				{createField('', 'lookingForAJob', [], Input, {type: 'checkbox'})}
+				{createField<ProfileTypeKeys>('', 'lookingForAJob', [], Input, {type: 'checkbox'})}
 			</div>
 
 			<div>
 				<b>Мои профессиональные навыки:</b>
-				{createField('Мои профессиональные навыки', 'lookingForAJobDescription', [], TextArea)}
+				{createField<ProfileTypeKeys>('My professional skills', 'lookingForAJobDescription', [], TextArea)}
 			</div>
 
 			<div>
 				<b>Обо мне:</b>
-				{createField('Обо мне', 'aboutMe', [], TextArea)}
+				{createField<ProfileTypeKeys>('Обо мне', 'aboutMe', [], TextArea)}
 			</div>
 
 			<div>
@@ -64,7 +57,7 @@ const ProfileDataForm: React.FC<FormProps> = ({handleSubmit, profile, error}) =>
 	)
 }
 
-// Обертываем компонент в reduxForm, указывая, что 'ProfileDataFormValues' - это тип значений формы
-const ProfileDataReduxForm = reduxForm<ProfileDataFormValues, ProfileDataFormProps>({form: 'edit-profile'})(ProfileDataForm)
+// Обертываем компонент в reduxForm, указывая, что ProfileType, Props - это тип значений формы
+const ProfileDataReduxForm = reduxForm<ProfileType, Props>({form: 'edit-profile'})(ProfileDataForm)
 
 export default ProfileDataReduxForm

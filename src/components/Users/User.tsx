@@ -1,18 +1,16 @@
 import React from 'react'
 import styles from './Users.module.css'
 import {NavLink} from 'react-router-dom'
+import {UserType} from '../../types/types'
 
 type Props = {
-	user: any,
-	followingInProgress: any,
-	follow: any,
-	unfollow: any
+	user: UserType
+	followingInProgress: Array<number>
+	follow: (userId: number) => void
+	unfollow: (userId: number) => void
 }
 
-function User({
-	user, followingInProgress, follow, unfollow
-}: { user: any, followingInProgress: any, follow: any, unfollow: any }) {
-
+const User: React.FC<Props> = ({user, followingInProgress, follow, unfollow}) => {
 	return <div>
 						<span>
 							<div>
@@ -51,17 +49,12 @@ function User({
 									<div>{user.status}</div>
 								</span>
 								<span className={styles.locationInfo}>
-									{user.location && (
-										<>
-											<div>{user.location.country}</div>
-											<div>{user.location.city}</div>
-										</>
-									)}
+											<div>{'user.location.country'}</div>
+											<div>{'user.location.city'}</div>
 								</span>
 							</div>
 						</span>
 	</div>
-
 }
 
 export default User

@@ -32,6 +32,7 @@ const Users: React.FC<PropsType> = ({
 	}
 
 	return <div>
+		<UsersSearchForm/>
 		<Paginator currentPageNumber={currentPageNumber}
 		           totalItemsCount={totalUsersCount}
 		           pageSize={pageSize}
@@ -43,6 +44,13 @@ const Users: React.FC<PropsType> = ({
 		                                     follow={follow}
 		                                     unfollow={unfollow}
 		                                     key={user.id}/>)}
+	</div>
+}
+
+const UsersSearchForm = () => {
+	return <div>
+
+
 	</div>
 }
 

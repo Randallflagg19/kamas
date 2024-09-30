@@ -1,20 +1,21 @@
 import styles from './DialogItem.module.css'
 import {NavLink} from 'react-router-dom'
 
-type dialogItemProps = {
+type Props = {
 	key: number,
 	id: number,
 	name: string
 }
 
-export default function DialogItem(props: dialogItemProps) {
+const DialogItem: React.FC<Props> = (props) => {
 	let path = '/dialogs/' + props.id
 	return (
 		<div className={styles.dialog + ' ' + styles.active}>
 			<NavLink to={path}>{props.name}</NavLink>
 		</div>
 	)
-};
+}
 
+export default DialogItem
 
 

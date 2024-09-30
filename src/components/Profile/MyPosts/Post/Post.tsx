@@ -1,13 +1,12 @@
 import React from 'react'
 import styles from './Post.module.css'
 
-type PostProps = {
-	key: number,
-	id: number;
-	message: string;
-	likesCount: number;
+type Props = {
+	id: number
+	message: string
+	likesCount: number
 }
-export default function Post(props: PostProps) {
+const Post: React.FC<Props> = (props) => {
 	return (
 		<div className={styles.item}>
 			<img className={styles.image} src="https://rog.asus.com/media/1719369630894.jpg"/>
@@ -18,3 +17,4 @@ export default function Post(props: PostProps) {
 		</div>
 	)
 }
+export default Post

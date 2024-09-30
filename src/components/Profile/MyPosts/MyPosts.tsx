@@ -1,53 +1,34 @@
 import React from 'react'
 import styles from './MyPosts.module.css'
-import {maxLengthCreator, minLengthCreator, required} from '../../../utils/validate/validators'
 import Post from './Post/Post'
-// @ts-ignore
-import {Field, reduxForm} from 'redux-form'
-import {TextArea} from '../../common/FormsControls/FormsControls'
+import AddPostForm, {AddPostFormValuesType} from './AddPostForm/AddPostForm'
+import {PostType} from '../../../types/types'
 
-const AddNewPostForm = reduxForm({form: 'ProfileAddNewPostForm'})((props: any) => {
-	return (
-		<form onSubmit={props.handleSubmit}>
-			<div>
-				<Field
-					name="newPostText"
-					component={TextArea}
-					placeholder={'Post message'}
-					validate={[required, maxLengthCreator(10), minLengthCreator(2)]}
-				/>
-			</div>
-			<button type="submit">Add post</button>
-		</form>
-	)
-})
+export type MapProps = {
+	posts: Array<PostType>
+}
 
-type MyPostsProps = {
-	posts: Array<{
-		id: number;
-		message: string;
-		likesCount: number;
-	}>;
-	addPost: (newPostText: string) => void;
-};
+export type DispatchProps = {
+	addPost: (newPostText: string) => void
+}
 
-const MyPosts: React.FC<MyPostsProps> = React.memo((props) => {
-
-	let postsElements = [...props.posts].map((post) => (
+const MyPosts: React.FC<MapProps & DispatchProps> = props => {
+	let postsElements = [...props.posts].reverse().map((post) => (
 		<Post key={post.id} id={post.id} message={post.message} likesCount={post.likesCount}/>
 	))
-
-	let onAddPost = (values: any) => {
+	let onAddPost = (values: AddPostFormValuesType) => {
 		props.addPost(values.newPostText)
 	}
 
 	return (
 		<div className={styles.postsBlock}>
 			<h3>My posts</h3>
-			<AddNewPostForm onSubmit={onAddPost}/>
+			<AddPostForm onSubmit={onAddPost}/>
 			<div className={styles.posts}>{postsElements}</div>
 		</div>
 	)
-})
+}
 
-export default MyPosts
+const MyPostsMemorized = React.memo(MyPosts)
+
+export default MyPostsMemorized

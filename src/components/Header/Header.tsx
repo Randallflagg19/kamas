@@ -2,13 +2,18 @@ import React from 'react'
 import styles from './Header.module.css'
 import {NavLink} from 'react-router-dom'
 
-interface HeaderProps {
-	id: number | null;
-	email: string | null;
-	login: string | null;
+export type MapProps = {
+	isAuth: boolean
+	login: string | null
+
 }
 
-export default function Header(props: any) {
+export type DispatchProps = {
+
+	logout: () => void
+}
+
+const Header: React.FC<MapProps & DispatchProps> = (props) => {
 
 	return (
 		<header className={styles.header}>
@@ -26,3 +31,4 @@ export default function Header(props: any) {
 		</header>
 	)
 }
+export default Header

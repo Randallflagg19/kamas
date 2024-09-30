@@ -1,16 +1,17 @@
-import {Route, Routes} from 'react-router-dom'
+import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import UsersContainer from './components/Users/UsersContainer'
-import ProfileContainer, {withRouter} from './components/Profile/ProfileContainer'
+import ProfileContainer from './components/Profile/ProfileContainer'
 import HeaderContainer from './components/Header/HeaderContainer'
 import Login from './components/Login/Login'
 import {compose} from 'redux'
 import {initializeApp} from './redux/appReducer'
-import {connect} from 'react-redux'
+import {connect, Provider} from 'react-redux'
 import React, {lazy, Suspense} from 'react'
 import './App.css'
 import Navbar from './components/Navbar/Navbar'
 import Preloader from './components/common/Preloader/Preloader'
-// import DialogsContainer from './components/Dialogs/DialogsContainer'
+import store, {AppStateType} from './redux/reduxStore'
+import {withSuspense} from './hoc/WithSuspense'
 
 const DialogsContainer = lazy(() => import('./components/Dialogs/DialogsContainer'))
 
@@ -19,19 +20,27 @@ interface AppProps {
 	initializeApp: () => void;
 }
 
-class App extends React.Component<AppProps> {
-	catchAllUnhandledErrors = (PromiseRejectionEvent: any) => {
+type MapPropsType = ReturnType<typeof mapStateToProps>
+type DispatchPropsType = {
+	initializeApp: () => void
+}
+
+const SuspendedDialogs = withSuspense(DialogsContainer)
+const SuspendedProfile = withSuspense(ProfileContainer)
+
+class App extends React.Component<MapPropsType & DispatchPropsType> {
+	catchAllUnhandledErrors = (e: PromiseRejectionEvent) => {
 		alert('Some error occured')
 	}
 
 	componentDidMount() {
 		this.props.initializeApp()
-		// window.addEventListener('unhandledrejection', this.catchAllUnhandledErrors)
+		window.addEventListener('unhandledrejection', this.catchAllUnhandledErrors)
 	}
 
-	// componentWillUnmount() {
-	// 	window.removeEventListener('unhandledrejection', this.catchAllUnhandledErrors)
-	// }
+	componentWillUnmount() {
+		window.removeEventListener('unhandledrejection', this.catchAllUnhandledErrors)
+	}
 
 	render() {
 		if (!this.props.initialized) { return <Preloader/>}
@@ -44,16 +53,8 @@ class App extends React.Component<AppProps> {
 
 					<Routes>
 
-						<Route path="/profile/:userId?"
-						       element={<ProfileContainer/>}/>
-						<Route
-							path="/dialogs"
-							element={
-								<Suspense fallback={<Preloader/>}>
-									<DialogsContainer/>
-								</Suspense>
-							}
-						/>
+						<Route path="/profile/:userId?" element={<SuspendedProfile/>}/>
+						<Route path="/dialogs" element={<SuspendedDialogs/>}/>
 						<Route path="/news" element={<ProfileContainer/>}/>
 						<Route path="/music" element={<ProfileContainer/>}/>
 						<Route path="/settings" element={<ProfileContainer/>}/>
@@ -69,10 +70,20 @@ class App extends React.Component<AppProps> {
 	}
 }
 
-const mapStateToProps = (state: any) => ({
+const mapStateToProps = (state: AppStateType) => ({
 	initialized: state.app.initialized
 })
 
-export default compose(
-	withRouter,
-	connect(mapStateToProps, {initializeApp}))(App)
+const AppContainer = compose<React.ComponentType>(connect(mapStateToProps, {initializeApp}))(App)
+
+const SamuraiJSApp: React.FC = () => {
+	return <BrowserRouter basename={process.env.PUBLIC_URL}>
+		<React.StrictMode>
+			<Provider store={store}>
+				<AppContainer/>
+			</Provider>
+		</React.StrictMode>
+	</BrowserRouter>
+}
+
+export default SamuraiJSApp

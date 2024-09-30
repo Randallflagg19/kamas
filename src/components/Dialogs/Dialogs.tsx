@@ -1,36 +1,35 @@
 import DialogItem from './DialogItem/DialogItem'
 import styles from './Dialogs.module.css'
 import Message from './Message/Message'
-import {Navigate} from 'react-router-dom'
-// @ts-ignore
-import {Field, reduxForm} from 'redux-form'
-import AddMessageForm from './AddMessageForm/AddMEssageForm'
+import AddMessageForm from './AddMessageForm/AddMessageForm'
+import React from 'react'
+import {InitialStateType} from '../../redux/dialogsReducer'
 
-export default function Dialogs(props: any) {
-	type Dialog = {
-		key: number,
-		id: number;
-		name: string;
-	};
-	type Message = {
-		key: number,
-		id: number;
-		message: string;
-	};
+type PropsType = {
+	dialogsPage: InitialStateType,
+	sendMessage: (messageText: string) => void
+}
+
+export type NewMessageFormValuesType = {
+	newMessageBody: string,
+}
+
+const Dialogs: React.FC<PropsType> = (props) => {
+
 	let state = props.dialogsPage
 
-	let dialogsElements = state.dialogs.map((dialog: Dialog) => {
+	let dialogsElements = state.dialogs.map((dialog) => {
 		return <DialogItem key={dialog.id} id={dialog.id} name={dialog.name}/>
 	})
 
-	let messagesElements = state.messages.map((message: Message) => {
+	let messagesElements = state.messages.map((message) => {
 		return <Message key={message.id} id={message.id} message={message.message}/>
 	})
 
-	let addNewMessage = (values: any) => {
+	let addNewMessage = (values: NewMessageFormValuesType) => {
 		props.sendMessage(values.newMessageBody)
 	}
-	if (!props.isAuth) return <Navigate to={'/login'}/>
+	// if (!props.isAuth) return <Navigate to={'/login'}/>
 	return <div className={styles.dialogs}>
 		<div className={styles.dialogsItems}>{dialogsElements}</div>
 		<div className={styles.messages}>{messagesElements}</div>
@@ -38,3 +37,4 @@ export default function Dialogs(props: any) {
 	</div>
 }
 
+export default Dialogs

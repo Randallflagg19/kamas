@@ -6,10 +6,10 @@ export const usersAPI = {
 			${currentPage}&count=${pageSize}`)
 		return response.data
 	},
-	followUser(userId: number) {
+	followUser: async (userId: number) => {
 		return instance.post<APIResponseType>(`follow/${userId}`).then(res => res.data)
 	},
-	unfollowUser(userId: number) {
+	unfollowUser: async (userId: number) => {
 		return instance.delete(`follow/${userId}`).then(res => res.data) as Promise<APIResponseType>
 	}
 }
