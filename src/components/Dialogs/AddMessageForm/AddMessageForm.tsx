@@ -4,7 +4,7 @@ import {Field, InjectedFormProps, reduxForm} from 'redux-form'
 import {createField, Input, TextArea} from '../../common/FormsControls/FormsControls'
 import {NewMessageFormValuesType} from '../Dialogs'
 import React from 'react'
-import {LoginFormValuesType} from '../../Login/Login'
+import {LoginFormValuesType} from '../../LoginPage/LoginPage'
 
 const maxLength50 = maxLengthCreator(50)
 

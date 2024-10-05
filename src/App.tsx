@@ -1,8 +1,8 @@
 import {BrowserRouter, Route, Routes} from 'react-router-dom'
-import UsersContainer from './components/Users/UsersContainer'
+import {UsersContainer} from './components/Users/UsersContainer'
 import ProfileContainer from './components/Profile/ProfileContainer'
 import HeaderContainer from './components/Header/HeaderContainer'
-import Login from './components/Login/Login'
+import {LoginPage} from './components/LoginPage/LoginPage'
 import {compose} from 'redux'
 import {initializeApp} from './redux/appReducer'
 import {connect, Provider} from 'react-redux'
@@ -14,11 +14,6 @@ import store, {AppStateType} from './redux/reduxStore'
 import {withSuspense} from './hoc/WithSuspense'
 
 const DialogsContainer = lazy(() => import('./components/Dialogs/DialogsContainer'))
-
-interface AppProps {
-	initialized: boolean;
-	initializeApp: () => void;
-}
 
 type MapPropsType = ReturnType<typeof mapStateToProps>
 type DispatchPropsType = {
@@ -59,7 +54,7 @@ class App extends React.Component<MapPropsType & DispatchPropsType> {
 						<Route path="/music" element={<ProfileContainer/>}/>
 						<Route path="/settings" element={<ProfileContainer/>}/>
 						<Route path="/users" element={<UsersContainer pageTitle="samurai"/>}/>
-						<Route path="/login" element={<Login/>}/>
+						<Route path="/login" element={<LoginPage/>}/>
 						<Route path="/" element={<Suspense fallback={<Preloader/>}>
 							<ProfileContainer/></Suspense>}/>
 						<Route path="*" element={<div>404 NOT FOUND</div>}/>

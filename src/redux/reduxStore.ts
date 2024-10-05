@@ -7,6 +7,8 @@ import authReducer from './authReducer'
 import {thunk, ThunkAction} from 'redux-thunk'
 import {reducer as formReducer} from 'redux-form'
 import appReducer from './appReducer'
+import {ThunkDispatch} from 'redux-thunk'
+import {AnyAction} from 'redux'
 
 const thunkMiddleware = thunk
 
@@ -34,5 +36,5 @@ export type BaseThunkType<A extends Action = Action, R = Promise<void>> = ThunkA
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const store = createStore(rootReducer, composeEnhancers(
 	applyMiddleware(thunkMiddleware)))
-
+export type AppDispatch = ThunkDispatch<AppStateType, unknown, AnyAction>
 export default store
