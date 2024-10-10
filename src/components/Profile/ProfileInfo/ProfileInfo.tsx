@@ -33,6 +33,7 @@ const ProfileInfo: React.FC<Props> = ({
 	}
 
 	const onSubmit = async (formData: ProfileType) => {
+		console.log('Submitted form data:', formData) // Добавьте это для отладки
 		try {
 			await saveProfile(formData)
 			setEditMode(false)
@@ -53,8 +54,6 @@ const ProfileInfo: React.FC<Props> = ({
 					? <ProfileDataForm initialValues={profile} profile={profile} onSubmit={onSubmit}/>
 					:
 					<ProfileData letEditMode={() => setEditMode(true)} profile={profile} isOwner={isOwner}/>}
-
-
 				<ProfileStatusWithHooks status={status} updateStatus={updateStatus}/>
 			</div>
 

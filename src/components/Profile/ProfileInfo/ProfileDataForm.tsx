@@ -15,49 +15,44 @@ type Props = {
 }
 type  ProfileTypeKeys = GetStringKeys<ProfileType>
 
-// Основной компонент формы
-const ProfileDataForm: React.FC<InjectedFormProps<ProfileType, Props> & Props> = ({handleSubmit, profile, error}) => {
-	return (
-		<form onSubmit={handleSubmit}>
-			<button>Сохранить</button>
-			{error && (
-				<div className={style.formSummaryError}>
-					{error}
-				</div>
-			)}
+const ProfileDataForm: React.FC<InjectedFormProps<ProfileType, Props> & Props> =
+	({handleSubmit, profile, error}) => {
 
-			<div>
-				<b>Полное имя</b>: {createField<ProfileTypeKeys>('Full name', 'fullName', [], Input)}
-			</div>
-
-			<div>
-				<b>Ищу работу: </b>
-				{createField<ProfileTypeKeys>('', 'lookingForAJob', [], Input, {type: 'checkbox'})}
-			</div>
-
-			<div>
-				<b>Мои профессиональные навыки:</b>
-				{createField<ProfileTypeKeys>('My professional skills', 'lookingForAJobDescription', [], TextArea)}
-			</div>
-
-			<div>
-				<b>Обо мне:</b>
-				{createField<ProfileTypeKeys>('Обо мне', 'aboutMe', [], TextArea)}
-			</div>
-
-			<div>
-				<b>Контакты </b>:
-				{Object.keys(profile.contacts).map(key => (
-					<div key={key} className={styles.contact}>
-						<b>{key}: {createField(key, 'contacts.' + key, [], Input)}</b>
+		return (
+			<form onSubmit={handleSubmit}>
+				<button>Save</button>
+				{error && (
+					<div className={style.formSummaryError}>
+						{error}
 					</div>
-				))}
-			</div>
-		</form>
-	)
-}
+				)}
+				<div>
+					<b>Полное имя</b>: {createField<ProfileTypeKeys>('Full name', 'fullName', [], Input)}
+				</div>
+				<div>
+					<b>Ищу работу: </b>
+					{createField<ProfileTypeKeys>('', 'lookingForAJob', [], Input, {type: 'checkbox'})}
+				</div>
+				<div>
+					<b>Мои профессиональные навыки:</b>
+					{createField<ProfileTypeKeys>('My professional skills', 'lookingForAJobDescription', [], TextArea)}
+				</div>
+				<div>
+					<b>Обо мне:</b>
+					{createField<ProfileTypeKeys>('Обо мне', 'aboutMe', [], TextArea)}
+				</div>
+				<div>
+					<b>Контакты </b>:
+					{Object.keys(profile.contacts).map(key => (
+						<div key={key} className={styles.contact}>
+							<b>{key}: {createField(key, 'contacts.' + key, [], Input)}</b>
+						</div>
+					))}
+				</div>
+			</form>
+		)
+	}
 
-// Обертываем компонент в reduxForm, указывая, что ProfileType, Props - это тип значений формы
 const ProfileDataReduxForm = reduxForm<ProfileType, Props>({form: 'edit-profile'})(ProfileDataForm)
 
 export default ProfileDataReduxForm

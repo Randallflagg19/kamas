@@ -62,7 +62,7 @@ export const Users: React.FC = () => {
 			params.push(`page=${currentPageNumber}`)
 		}
 
-		navigate(`/users${params.length ? `?${params.join('&')}` : ''}`)
+		navigate(`/developers${params.length ? `?${params.join('&')}` : ''}`)
 	}, [filter, currentPageNumber, navigate])
 
 	const onPageChanged = (pageNumber: number) => {

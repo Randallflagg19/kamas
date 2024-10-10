@@ -31,8 +31,10 @@ const profileReducer = (state = initialState, action: ActionsType): InitialState
 		}
 
 		case 'SN/PROFILE/SET-USER-PROFILE': {
+			console.log('Profile updated:', action.profile)
 			return {...state, profile: action.profile}
 		}
+
 		case 'SN/PROFILE/DELETE-POST': {
 			return {...state, posts: state.posts.filter(post => post.id !== action.postId)}
 		}

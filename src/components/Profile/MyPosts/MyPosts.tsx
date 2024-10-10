@@ -16,7 +16,7 @@ const MyPosts: React.FC<MapProps & DispatchProps> = props => {
 	let postsElements = [...props.posts].reverse().map((post) => (
 		<Post key={post.id} id={post.id} message={post.message} likesCount={post.likesCount}/>
 	))
-	let onAddPost = (values: AddPostFormValuesType) => {
+	const onAddPost = (values: AddPostFormValuesType) => {
 		props.addPost(values.newPostText)
 	}
 

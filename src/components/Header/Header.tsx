@@ -1,34 +1,54 @@
 import React from 'react'
 import styles from './Header.module.css'
-import {NavLink} from 'react-router-dom'
+import {Link, NavLink} from 'react-router-dom'
+import {Avatar, Button, Col, Layout, Menu, Row} from 'antd'
+import {UserOutlined} from '@ant-design/icons'
+import {useDispatch, useSelector} from 'react-redux'
+import {selectCurrentUserLogin, selectIsAuth} from '../../redux/authSelectors'
+import {logout} from '../../redux/authReducer'
+import {AppDispatch} from '../../redux/reduxStore'
 
-export type MapProps = {
-	isAuth: boolean
-	login: string | null
+export const AppHeader: React.FC = (props) => {
 
-}
+	const isAuth = useSelector(selectIsAuth)
+	const login = useSelector(selectCurrentUserLogin)
 
-export type DispatchProps = {
+	const dispatch: AppDispatch = useDispatch()
 
-	logout: () => void
-}
+	const logoutCallBack = () => {
+		dispatch(logout())
+	}
 
-const Header: React.FC<MapProps & DispatchProps> = (props) => {
-
+	const {Header} = Layout
 	return (
-		<header className={styles.header}>
-			<img
-				src="https://avatars.mds.yandex.net/i?id=1394fddc1c1dad6261477b2158ee1f24f7f26959-8496968-images-thumbs&n=13"
-				alt=""
-			/>
-			<div className={styles.loginBlock}>
-				{props.isAuth ?
-					<div> {props.login}
-						<button onClick={props.logout}>Logout</button>
-					</div> :
-					<NavLink to={'/login'}>Login</NavLink>}
-			</div>
-		</header>
+		<Header className="header">
+			<Row>
+				<Col span={18}>
+					<Menu
+						theme="dark"
+						mode="horizontal"
+						defaultSelectedKeys={['2']}
+						items={[{
+							key: '1',
+							label: <Link to="/developers">Developers</Link>
+						}]}/>
+
+				</Col>
+
+				{isAuth ?
+					<><Col span={2}>
+						<Avatar alt={login || ''} style={{backgroundColor: '#87d068'}}
+						        icon={<UserOutlined/>}/>
+					</Col>
+						<Col span={4}>
+							<Button onClick={logoutCallBack}>Log out</Button>
+						</Col></>
+					:
+					<Col span={6}>
+						<Button><Link to={'/login'}>Login</Link></Button>
+
+					</Col>}
+			</Row>
+		</Header>
 	)
 }
-export default Header
