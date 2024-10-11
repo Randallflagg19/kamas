@@ -6,6 +6,14 @@ import ProfileDataForm from './ProfileDataForm'
 import {ContactsType, ProfileType} from '../../../types/types'
 import {ThunkType} from '../../../redux/profileReducer'
 
+export type ProfileDataType = {
+	lookingForAJob: boolean
+	lookingForAJobDescription: string
+	fullName: string
+	contacts: ContactsType
+	aboutMe: string
+}
+
 type Props = {
 	profile: ProfileType | null
 	status: string
@@ -32,15 +40,11 @@ const ProfileInfo: React.FC<Props> = ({
 		}
 	}
 
-	const onSubmit = async (formData: ProfileType) => {
-		console.log('Submitted form data:', formData) // Добавьте это для отладки
-		try {
-			await saveProfile(formData)
-			setEditMode(false)
-		}
-		catch (error) {
-			console.error(error)
-		}
+	const handleSubmit = async (formData: ProfileType) => {
+		console.log('handleSubmit')
+		await saveProfile(formData)
+		console.log('saveProfile')
+		setEditMode(false)
 	}
 
 	return (
@@ -51,7 +55,7 @@ const ProfileInfo: React.FC<Props> = ({
 					className={styles.profileImage}/>
 				{isOwner && <input type={'file'} onChange={onMainPhotoSelected}/>}
 				{editMode
-					? <ProfileDataForm initialValues={profile} profile={profile} onSubmit={onSubmit}/>
+					? <ProfileDataForm profile={profile} handleSubmit={handleSubmit}/>
 					:
 					<ProfileData letEditMode={() => setEditMode(true)} profile={profile} isOwner={isOwner}/>}
 				<ProfileStatusWithHooks status={status} updateStatus={updateStatus}/>
@@ -62,7 +66,7 @@ const ProfileInfo: React.FC<Props> = ({
 }
 
 type ProfileDataProps = {
-	profile: ProfileType
+	profile: ProfileDataType
 	isOwner: boolean
 	letEditMode: () => void
 }

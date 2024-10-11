@@ -36,7 +36,6 @@ const App: React.FC<MapPropsType & DispatchPropsType> = (props) => {
 	if (!props.initialized) {
 		return <Preloader/>
 	}
-
 	return (
 		<Layout>
 			<AppHeader/>

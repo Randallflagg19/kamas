@@ -1,58 +1,86 @@
 import React from 'react'
-import {
-	createField,
-	GetStringKeys,
-	Input,
-	TextArea
-} from './../../common/FormsControls/FormsControls'
-import {reduxForm, InjectedFormProps} from 'redux-form'
-import styles from './ProfileInfo.module.css'
-import style from '../../common/FormsControls/FormsControls.module.css'
+import {Formik, Form, Field, ErrorMessage} from 'formik'
 import {ProfileType} from '../../../types/types'
+import styles from './ProfileInfo.module.css'
+import {Input} from 'antd'
+import TextArea from 'antd/es/input/TextArea'
 
 type Props = {
-	profile: ProfileType
-}
-type  ProfileTypeKeys = GetStringKeys<ProfileType>
+	profile: ProfileType;
+	handleSubmit: (formData: ProfileType) => Promise<void>;
+};
 
-const ProfileDataForm: React.FC<InjectedFormProps<ProfileType, Props> & Props> =
-	({handleSubmit, profile, error}) => {
+const ProfileDataForm: React.FC<Props> = ({profile, handleSubmit}) => {
+	return (
+		<Formik
+			initialValues={profile}
+			validate={(values) => {
+				const errors: Partial<ProfileType> = {}
+				if (!values.fullName) {
+					errors.fullName = 'Required'
+				}
+				return errors
+			}}
 
-		return (
-			<form onSubmit={handleSubmit}>
-				<button>Save</button>
-				{error && (
-					<div className={style.formSummaryError}>
-						{error}
+			onSubmit={async (values) => {
+				console.log(values)
+				await handleSubmit(values)
+			}}
+		>
+			{({errors, touched}) => (
+				<Form>
+					<button type="submit">Save</button>
+					<div>
+						<b>Full name</b>:
+						<Field
+							name="fullName"
+							as={Input}
+							className={touched.fullName && errors.fullName ? styles.errorInput : ''}
+						/>
+						<ErrorMessage name="fullName" component="div" className={styles.error}/>
 					</div>
-				)}
-				<div>
-					<b>Полное имя</b>: {createField<ProfileTypeKeys>('Full name', 'fullName', [], Input)}
-				</div>
-				<div>
-					<b>Ищу работу: </b>
-					{createField<ProfileTypeKeys>('', 'lookingForAJob', [], Input, {type: 'checkbox'})}
-				</div>
-				<div>
-					<b>Мои профессиональные навыки:</b>
-					{createField<ProfileTypeKeys>('My professional skills', 'lookingForAJobDescription', [], TextArea)}
-				</div>
-				<div>
-					<b>Обо мне:</b>
-					{createField<ProfileTypeKeys>('Обо мне', 'aboutMe', [], TextArea)}
-				</div>
-				<div>
-					<b>Контакты </b>:
-					{Object.keys(profile.contacts).map(key => (
-						<div key={key} className={styles.contact}>
-							<b>{key}: {createField(key, 'contacts.' + key, [], Input)}</b>
-						</div>
-					))}
-				</div>
-			</form>
-		)
-	}
 
-const ProfileDataReduxForm = reduxForm<ProfileType, Props>({form: 'edit-profile'})(ProfileDataForm)
+					<div>
+						<b>Looking for a job:</b>
+						<Field name="lookingForAJob" type="checkbox" as={Input}/>
+					</div>
 
-export default ProfileDataReduxForm
+					<div>
+						<b>My professional skills:</b>
+						<Field name="lookingForAJobDescription"
+						       as={TextArea}
+						       className={touched.lookingForAJobDescription && errors.lookingForAJobDescription ? styles.errorInput : ''}
+						/>
+						<ErrorMessage name="lookingForAJobDescription" component="div"
+						              className={styles.error}/>
+					</div>
+
+					<div>
+						<b>About me:</b>
+						<Field
+							name="aboutMe"
+							as={TextArea}
+							className={touched.aboutMe && errors.aboutMe ? styles.errorInput : ''}
+						/>
+						<ErrorMessage name="aboutMe" component="div" className={styles.error}/>
+					</div>
+
+					<div>
+						<b>Contacts:</b>
+						{Object.keys(profile.contacts).map(key => {
+							return <div key={key} className={styles.contact}>
+								<b>{key}:</b>
+								<Field
+									name={`contacts.${key}`}
+									as={Input}
+								/>
+							</div>
+						})}
+					</div>
+				</Form>
+			)}
+		</Formik>
+	)
+}
+
+export default ProfileDataForm

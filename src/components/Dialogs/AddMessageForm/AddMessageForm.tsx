@@ -1,29 +1,44 @@
-import {maxLengthCreator, required} from '../../../utils/validate/validators'
-// @ts-ignore
-import {Field, InjectedFormProps, reduxForm} from 'redux-form'
-import {createField, Input, TextArea} from '../../common/FormsControls/FormsControls'
-import {NewMessageFormValuesType} from '../Dialogs'
 import React from 'react'
-import {LoginFormValuesType} from '../../LoginPage/LoginPage'
+import {Formik, Field, Form, ErrorMessage} from 'formik'
+import {maxLengthCreator} from '../../../utils/validate/validators'
+import {NewMessageFormValuesType} from '../Dialogs'
 
 const maxLength50 = maxLengthCreator(50)
 
-type  NewMessageFormValuesKeysType = Extract<keyof NewMessageFormValuesType, string>
-type  PropsType = {}
-const AddMessageForm: React.FC<InjectedFormProps<NewMessageFormValuesType, PropsType> & PropsType> = (props: any) => {
+const AddMessageForm: React.FC<{
+	onSubmit: (values: NewMessageFormValuesType) => void
+}> = ({onSubmit}) => {
 	return (
-		<form onSubmit={props.handleSubmit}>
-			<div>
-				{createField<NewMessageFormValuesKeysType>('new message',
-					'newMessageBody', [required, maxLength50], Input)}
-
-			</div>
-			<div>
-				<button>Send</button>
-			</div>
-
-
-		</form>
+		<Formik
+			initialValues={{newMessageBody: ''}}
+			validate={values => {
+				const errors: Partial<NewMessageFormValuesType> = {}
+				if (!values.newMessageBody) {
+					errors.newMessageBody = 'Напиши что нибудь)'
+				}
+				else if (maxLength50(values.newMessageBody)) {
+					errors.newMessageBody = maxLength50(values.newMessageBody)
+				}
+				return errors
+			}}
+			onSubmit={(values, {resetForm}) => {
+				onSubmit(values)
+				resetForm()
+			}}
+		>
+			{({isSubmitting}) => (
+				<Form>
+					<div>
+						<Field name="newMessageBody" placeholder="New message"/>
+						<ErrorMessage name="newMessageBody" component="div"/>
+					</div>
+					<div>
+						<button type="submit" disabled={isSubmitting}>Send</button>
+					</div>
+				</Form>
+			)}
+		</Formik>
 	)
 }
-export default reduxForm<NewMessageFormValuesType>({form: 'dialog-add-message-form'})(AddMessageForm)
+
+export default AddMessageForm

@@ -31,10 +31,8 @@ const profileReducer = (state = initialState, action: ActionsType): InitialState
 		}
 
 		case 'SN/PROFILE/SET-USER-PROFILE': {
-			console.log('Profile updated:', action.profile)
 			return {...state, profile: action.profile}
 		}
-
 		case 'SN/PROFILE/DELETE-POST': {
 			return {...state, posts: state.posts.filter(post => post.id !== action.postId)}
 		}
@@ -79,15 +77,26 @@ export const savePhoto = (file: File): ThunkType => async (dispatch) => {
 export const saveProfile = (profile: ProfileType): ThunkType =>
 	async (dispatch, getState) => {
 		const userId = getState().auth.userId
-		const data = await profileAPI.saveProfile(profile)
-		if (data.resultCode === 0) {
-			if (userId) {await dispatch(getUserProfile(userId))}
-			else {throw new Error('UserId can\'t be null')}
+		console.log('Saving profile...', profile) // Лог перед вызовом API
+
+		try {
+			const response = await profileAPI.saveProfile(profile)
+			console.log('API response:', response)
+			console.log('API response data:', response.data) // Логируем данные ответа
+
+			// Проверяем resultCode
+			if (response.data.resultCode === 0 && userId) {
+				await dispatch(getUserProfile(userId))
+			}
+			else {
+				dispatch(stopSubmit('profile', {_error: response.data.messages[0]}))
+			}
 		}
-		else {
-			dispatch(stopSubmit('edit-profile', {_error: data.messages[0]}))
-			return Promise.reject(data.messages[0])
+		catch (error) {
+			console.error('Error saving profile:', error)
+			dispatch(stopSubmit('profile', {_error: 'Failed to save profile'}))
 		}
+
 	}
 
 export default profileReducer

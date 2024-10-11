@@ -1,28 +1,34 @@
 import React from 'react'
-import {Field, InjectedFormProps, reduxForm} from 'redux-form'
-import {createField, GetStringKeys, Input} from '../../../common/FormsControls/FormsControls'
-import {required} from '../../../../utils/validate/validators'
-
-type Props = {}
+import {Formik, Field, Form, ErrorMessage} from 'formik'
 
 export type AddPostFormValuesType = {
 	newPostText: string;
-}
+};
 
-type AddPostFormValuesTypeKeys = GetStringKeys<AddPostFormValuesType>
-
-const AddPostForm:
-	React.FC<InjectedFormProps<AddPostFormValuesType, Props> & Props> = (props) => {
+const AddPostForm: React.FC<{
+	onSubmit: (values: AddPostFormValuesType) => void
+}> = ({onSubmit}) => {
 	return (
-		<form onSubmit={props.handleSubmit}>
-			<div>
-				{createField<AddPostFormValuesTypeKeys>('your post', 'newPostText', [required], Input)}
-			</div>
-			<div>
-				<button>Add post</button>
-			</div>
-		</form>
+		<Formik
+			initialValues={{newPostText: ''}}
+			onSubmit={(values, {resetForm}) => {
+				onSubmit(values)
+				resetForm()
+			}}
+		>
+			{({isSubmitting}) => (
+				<Form>
+					<div>
+						<Field name="newPostText" placeholder="Your post"/>
+						<ErrorMessage name="newPostText" component="div"/>
+					</div>
+					<div>
+						<button type="submit" disabled={isSubmitting}>Add post</button>
+					</div>
+				</Form>
+			)}
+		</Formik>
 	)
 }
 
-export default reduxForm<AddPostFormValuesType, Props>({form: 'profile-ass-post'})(AddPostForm)
+export default AddPostForm

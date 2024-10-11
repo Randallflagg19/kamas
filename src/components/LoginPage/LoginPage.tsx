@@ -1,47 +1,17 @@
 import React from 'react'
-import style from './../common/FormsControls/FormsControls.module.css'
-import {InjectedFormProps, reduxForm} from 'redux-form'
-import {createField, GetStringKeys, Input} from '../common/FormsControls/FormsControls'
-import {required} from '../../utils/validate/validators'
+import {Formik, Field, Form} from 'formik'
 import {useDispatch, useSelector} from 'react-redux'
 import {login} from '../../redux/authReducer'
 import {Navigate} from 'react-router-dom'
 import {AppDispatch, AppStateType} from '../../redux/reduxStore'
+import style from './LoginPage.module.css'
 
-type LoginFormOwnProps = {
-	captchaURl: string | null
-}
-
-const LoginForm: React.FC<InjectedFormProps<LoginFormValuesType,
-	LoginFormOwnProps> & LoginFormOwnProps> = ({
-	handleSubmit, error, captchaURl
-}) => {
-	return (
-		<form onSubmit={handleSubmit}>
-			{createField<LoginFormValuesTypeKeys>('Email', 'email', [required], Input)}
-			{createField<LoginFormValuesTypeKeys>('Password', 'password', [required], Input, {type: 'password'})}
-			{createField<LoginFormValuesTypeKeys>(undefined, 'rememberMe', [], Input, {type: 'checkbox'}, 'remember me')}
-			{captchaURl && <img src={captchaURl} alt="captcha"/>}
-			{captchaURl && createField<LoginFormValuesTypeKeys>('Symbols from image', 'captcha', [required], Input, {})}
-			{error && <div className={style.formSummaryError}>{error}</div>}
-			<div>
-				<button>Login</button>
-			</div>
-		</form>
-	)
-}
-
-const LoginReduxForm = reduxForm<LoginFormValuesType,
-	LoginFormOwnProps>({form: 'login'})(LoginForm)
-
-export type  LoginFormValuesType = {
-	captcha: string
-	rememberMe: boolean,
-	password: string
-	email: string
-}
-
-type LoginFormValuesTypeKeys = GetStringKeys<LoginFormValuesType>
+export type LoginFormValuesType = {
+	email: string;
+	password: string;
+	rememberMe: boolean;
+	captcha: string;
+};
 
 export const LoginPage: React.FC = () => {
 	const captchaURL = useSelector((state: AppStateType) => state.auth.captchaURL)
@@ -55,11 +25,72 @@ export const LoginPage: React.FC = () => {
 	if (isAuth) {
 		return <Navigate to={'/profile'}/>
 	}
+
 	return (
 		<div>
 			<h1>Login</h1>
-			<LoginReduxForm onSubmit={onSubmit} captchaURl={captchaURL}/>
+			<Formik
+				initialValues={{email: '', password: '', rememberMe: false, captcha: ''}}
+				validate={values => {
+					const errors: Partial<LoginFormValuesType> = {}
+					if (!values.email) {
+						errors.email = 'Введите адрес почты'
+					}
+					if (!values.password) {
+						errors.password = 'Введите пароль'
+					}
+					if (captchaURL && !values.captcha) {
+						errors.captcha = 'Введите символы с изображения'
+					}
+					return errors
+				}}
+				onSubmit={(values, {setSubmitting}) => {
+					onSubmit(values)
+					setSubmitting(false)
+				}}
+			>
+				{({isSubmitting, touched, errors}) => (
+					<Form>
+						<div>
+							<Field
+								name="email"
+								placeholder="Email"
+								className={touched.email && errors.email ? style.errorInput : ''}
+							/>
+							{touched.email && errors.email && <div className={style.error}>{errors.email}</div>}
+						</div>
+						<div>
+							<Field
+								name="password"
+								type="password"
+								placeholder="Password"
+								className={touched.password && errors.password ? style.errorInput : ''}
+							/>
+							{touched.password && errors.password &&
+                  <div className={style.error}>{errors.password}</div>}
+						</div>
+						<div>
+							<Field name="rememberMe" type="checkbox"/>
+							<label htmlFor="rememberMe">remember me</label>
+						</div>
+						{captchaURL && (
+							<div>
+								<img src={captchaURL} alt="captcha"/>
+								<Field
+									name="captcha"
+									placeholder="Symbols from image"
+									className={touched.captcha && errors.captcha ? style.errorInput : ''}
+								/>
+								{touched.captcha && errors.captcha &&
+                    <div className={style.error}>{errors.captcha}</div>}
+							</div>
+						)}
+						<div>
+							<button type="submit" disabled={isSubmitting}>Login</button>
+						</div>
+					</Form>
+				)}
+			</Formik>
 		</div>
 	)
 }
-

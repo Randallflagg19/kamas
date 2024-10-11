@@ -23,7 +23,7 @@ export const AppHeader: React.FC = (props) => {
 	return (
 		<Header className="header">
 			<Row>
-				<Col span={18}>
+				<Col span={17}>
 					<Menu
 						theme="dark"
 						mode="horizontal"
@@ -36,11 +36,14 @@ export const AppHeader: React.FC = (props) => {
 				</Col>
 
 				{isAuth ?
-					<><Col span={2}>
+					<><Col span={3}>
+						<span style={{color: 'white'}}> {login}</span>
+					</Col><Col span={2}>
 						<Avatar alt={login || ''} style={{backgroundColor: '#87d068'}}
 						        icon={<UserOutlined/>}/>
 					</Col>
-						<Col span={4}>
+
+						<Col span={2}>
 							<Button onClick={logoutCallBack}>Log out</Button>
 						</Col></>
 					:
