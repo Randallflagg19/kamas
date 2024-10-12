@@ -74,7 +74,9 @@ export const savePhoto = (file: File): ThunkType => async (dispatch) => {
 	dispatch(actions.savePhotoSuccess(data.data.photos))
 }
 
-export const saveProfile = (profile: ProfileType): ThunkType =>
+export const saveProfile = (profile: any
+	// ProfileType
+): ThunkType =>
 	async (dispatch, getState) => {
 		const userId = getState().auth.userId
 		console.log('Saving profile...', profile) // Лог перед вызовом API
@@ -82,14 +84,14 @@ export const saveProfile = (profile: ProfileType): ThunkType =>
 		try {
 			const response = await profileAPI.saveProfile(profile)
 			console.log('API response:', response)
-			console.log('API response data:', response.data) // Логируем данные ответа
 
 			// Проверяем resultCode
-			if (response.data.resultCode === 0 && userId) {
+			if (response.resultCode === 0 && userId) {
 				await dispatch(getUserProfile(userId))
 			}
 			else {
-				dispatch(stopSubmit('profile', {_error: response.data.messages[0]}))
+				console.log('thunk else')
+				dispatch(stopSubmit('profile', {_error: response.messages[0]}))
 			}
 		}
 		catch (error) {

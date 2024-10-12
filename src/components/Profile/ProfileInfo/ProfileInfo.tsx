@@ -20,7 +20,9 @@ type Props = {
 	updateStatus: (status: string) => void
 	isOwner: boolean
 	savePhoto: (file: File) => void
-	saveProfile: (profile: ProfileType) => ThunkType
+	saveProfile: (profile: any
+		// ProfileType
+	) => ThunkType
 }
 
 const ProfileInfo: React.FC<Props> = ({
@@ -40,7 +42,9 @@ const ProfileInfo: React.FC<Props> = ({
 		}
 	}
 
-	const handleSubmit = async (formData: ProfileType) => {
+	const handleSubmit = async (formData: any
+		// ProfileType
+	) => {
 		console.log('handleSubmit')
 		await saveProfile(formData)
 		console.log('saveProfile')

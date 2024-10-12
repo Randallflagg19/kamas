@@ -1,11 +1,8 @@
-import React, {useEffect, useState} from 'react'
-
-export type ChatMessage = {
-	userId: number,
-	userName: string,
-	message: string,
-	photo: string
-}
+import React, {useEffect, useRef, useState} from 'react'
+import {ChatMessageAPIType} from '../../api/chatAPI'
+import {useDispatch, useSelector} from 'react-redux'
+import {sendMessage, startMessagesListening, stopMessagesListening} from '../../redux/chatReducer'
+import {AppDispatch, AppStateType} from '../../redux/reduxStore'
 
 const ChatPage: React.FC = () => {
 	return <div>
@@ -14,93 +11,80 @@ const ChatPage: React.FC = () => {
 }
 
 const Chat: React.FC = () => {
-	const [ws, setWs] = useState<WebSocket | null>(null)
+
+	const dispatch: AppDispatch = useDispatch()
+
+	const status = useSelector((state: AppStateType) => state.chat.status)
 
 	useEffect(() => {
-		let webSocket: WebSocket
-
-		const closeHandler = () => {
-			console.log('CLOSE WS')
-			setTimeout(createChannel, 3000)
-		}
-
-		function createChannel() {
-
-			webSocket?.removeEventListener('close', closeHandler)
-			webSocket?.close()
-
-			webSocket = new WebSocket('wss://social-network.samuraijs.com/handlers/ChatHandler.ashx')
-			webSocket.addEventListener('close', closeHandler)
-			setWs(webSocket)
-		}
-
-		createChannel()
-
-		return () => {
-			webSocket.removeEventListener('close', closeHandler)
-			webSocket.close()
-		}
+		dispatch(startMessagesListening())
+		return (() => {
+			dispatch(stopMessagesListening())
+		})
 	}, [])
 
-	useEffect(() => {
-
-	}, [ws])
+	dispatch(startMessagesListening())
 
 	return <div>
-		<Messages ws={ws}/>
-		<AddMessageForm ws={ws}/>
+		{status === 'error' &&
+        <div>Some error occurred. Please refresh the page.</div>}
+		<>
+			<Messages/>
+			<AddMessageForm/>
+		</>
+
 	</div>
 }
 
-const Messages: React.FC<{ ws: WebSocket | null }> = ({ws}) => {
-	const [messages, setMessages] = useState<ChatMessage[]>([])
+const Messages: React.FC = () => {
+	console.log('Messages')
+	const messages = useSelector((state: AppStateType) =>
+		state.chat.messages)
+	const messagesRef = useRef<HTMLDivElement>(null)
+	const [isAutoScroll, setIsAutoScroll] = useState(false)
+
+	const scrollHandler = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+		let element = e.currentTarget
+		if (Math.abs((element.scrollHeight - element.scrollTop) - element.clientHeight) < 300) {
+			!isAutoScroll && setIsAutoScroll(true)
+		}
+		else {isAutoScroll && setIsAutoScroll(false)}
+	}
 
 	useEffect(() => {
-		const messageHandler = (e: MessageEvent) => {
-			let newMessages = JSON.parse(e.data)
-			setMessages((prevMessages) => [...prevMessages, ...newMessages])
-		}
-		ws?.addEventListener('message', messageHandler)
+		if (isAutoScroll) {messagesRef.current?.scrollIntoView({behavior: 'smooth'})}
 
-		return () => {
-			ws?.removeEventListener('message', messageHandler)
-		}
-	}, [ws])
+	}, [messages])
+
 	return (
-		<div style={{height: '400px', overflowY: 'auto'}}>
-			{messages.map((m, index) => <Message key={index} message={m}/>)}
+		<div style={{height: '400px', overflowY: 'auto'}} onScroll={scrollHandler}>
+			{messages.map((m, index) => <Message key={m.id} message={m}/>)}
+			<div ref={messagesRef}></div>
 		</div>
 	)
 }
 
-const Message: React.FC<{ message: ChatMessage }> = ({message}) => {
+const Message: React.FC<{ message: ChatMessageAPIType }> = React.memo(({message}) => {
+	console.log('Message')
 	return <div>
 		<img src={message.photo} style={{width: 40}}/><b>{message.userName}</b>
 		<br/>
 		{message.message}
 		<hr/>
 	</div>
-}
+})
 
-const AddMessageForm: React.FC<{ ws: WebSocket | null }> = ({ws}) => {
+const AddMessageForm: React.FC = () => {
 	const [message, setMessage] = useState('')
-	const [readyStatus, setReadyStatus] = useState<'pending' | 'ready'>('pending')
+	const dispatch: AppDispatch = useDispatch()
 
-	useEffect(() => {
-		const openHandler = () => {
-			setReadyStatus('ready')
-		}
-		ws?.addEventListener('open', openHandler)
-		return () => {
-			ws?.removeEventListener('open', openHandler)
-		}
-	}, [ws])
+	const status = useSelector((state: AppStateType) => state.chat.status)
 
-	const sendMessage = () => {
+	const sendMessageHandler = () => {
 		if (!message) {
 			return
 		}
-		ws?.send(message)
+		dispatch(sendMessage(message))
 		setMessage('')
 	}
 
@@ -108,7 +92,8 @@ const AddMessageForm: React.FC<{ ws: WebSocket | null }> = ({ws}) => {
 		<div><textarea onChange={(e) => setMessage(e.currentTarget.value)} value={message}></textarea>
 		</div>
 		<div>
-			<button disabled={ws === null || readyStatus !== 'ready'} onClick={sendMessage}>Send</button>
+			<button disabled={status !== 'ready'} onClick={sendMessageHandler}>Send
+			</button>
 		</div>
 	</div>
 }

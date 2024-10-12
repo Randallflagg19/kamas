@@ -23,9 +23,11 @@ export const profileAPI = {
 				{'Content-Type': 'multipart/form-data'}
 		}).then(res => res.data)
 	},
-	saveProfile: (profile: ProfileType) => {
+	saveProfile: async (profile: any
+		// ProfileType
+	) => {
 		console.log('api start')
-		return instance.put<APIResponseType>(`profile`, profile)
-		// .then(res => res.data)
+		const res = await instance.put<APIResponseType>(`profile`, profile)
+		return res.data
 	}
 }
